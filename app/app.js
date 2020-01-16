@@ -23,7 +23,3 @@ app.post('/signin', function (req, res) {
 app.listen(8000, function () {
   console.log("Started listening on port", 8000);
 })
-
-axios.defaults.baseURL = 'http://myurl';
-axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
-axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
