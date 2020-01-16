@@ -14,6 +14,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/username/repository.git"
+    "url": "git@github.com:mjshabani/react_app.git"
   }
 }
