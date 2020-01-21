@@ -1,6 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {Button} from '@material-ui/core'
 
 function App() {
   return (
@@ -8,16 +9,9 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>d/App.js</code> and save to reload.
+          سامانه رزرو زمان مشاوره
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Button variant='contained' >ورود به سامانه</Button>
       </header>
     </div>
   );

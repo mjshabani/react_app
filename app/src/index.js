@@ -18,7 +18,7 @@ let theme = createMuiTheme({
 theme = responsiveFontSizes(theme)
 
 ReactDOM.render(<ThemeProvider theme={theme}>
-    <Login />
+    <App />
   </ThemeProvider>,
   document.getElementById('root'));
 
