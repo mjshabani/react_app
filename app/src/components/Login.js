@@ -33,7 +33,7 @@ class Login extends React.Component {
                     <TextField id='username' label='نام کاربری یا شماره همراه'  onChange={this.handleUsernameChange}/>
                 </Grid>
                 <Grid item>
-                    <TextField id='password' label='رمز عبور' onChange={this.handlePasswordChange}/>
+                    <TextField id='password' type='password' label='رمز عبور' onChange={this.handlePasswordChange}/>
                 </Grid>
                 <Grid item>
                     <Button variant='contained' color='primary' onClick={() => this.props.onClick(this.state.username, this.state.password)}> ورود </Button>
