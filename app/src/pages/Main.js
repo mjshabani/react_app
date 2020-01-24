@@ -1,10 +1,6 @@
 import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
-import {Button} from '@material-ui/core';
-// import Card from '@material-ui/core/Card';
-// import CardActions from '@material-ui/core/CardActions';
-// import CardContent from '@material-ui/core/CardContent';
-// import CardHeader from '@material-ui/core/CardHeader';
+import { Button } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,6 +9,7 @@ import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
+import { Link as L } from 'react-router-dom'
 
 function Copyright() {
   return (
@@ -106,12 +103,13 @@ export default function Main() {
             نوبت‌دهی آنلاین مشاوره
           </Typography>
           <nav>
-            <Link variant="button" color="textPrimary" href="#" className={classes.link}>
-              مشاوران
-            </Link>
-            <Link variant="button" color="textPrimary" href="#" className={classes.link}>
-              مقالک‌ها
-            </Link>
+            <L to='/admin/login' className={classes.link}>
+              لاگین ادمین 
+            </L>
+
+            <L to='/admin/panel' className={classes.link}>
+              پنل ادمین
+            </L>
             <Link variant="button" color="textPrimary" href="#" className={classes.link}>
               زمان‌های مشاوره
             </Link>
@@ -140,7 +138,7 @@ export default function Main() {
       {/* End hero unit */}
       <Container maxWidth="md" component="main">
         <Grid container spacing={5} alignItems="flex-end">
-          
+
         </Grid>
       </Container>
       {/* Footer */}

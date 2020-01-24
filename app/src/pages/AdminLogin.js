@@ -5,7 +5,8 @@ import Container from '@material-ui/core/Container';
 import Login from '../components/Login'
 import axios from 'axios'
 import { connect } from 'react-redux'
-import { addSecretKey } from '../redux/actions/admin'
+import { addToken } from '../redux/actions/login'
+import { setAlert } from '../redux/actions/alert'
 
 const useStyles = makeStyles(theme => ({
   heroContent: {
@@ -22,15 +23,12 @@ function AdminLogin(props) {
       password: password
     })
       .then(function (response) {
-        console.log(response)
-        if (response.status === 201) {
-          console.log('passed')
-          props.addSecretKey(username, response.data.secret_key)
-        } else {
-        }
+        props.addToken('admin', username, response.data.secret_key)
       })
       .catch(function (error) {
-        console.log(error);
+        if(error.response){
+          props.setAlert(true, 'error', 'Authentication Failed', error.response.data)
+        }
       });
   }
 
@@ -38,7 +36,6 @@ function AdminLogin(props) {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="sm" component="main" className={classes.heroContent}>
-        <p>{props.username}</p>
         <Login onClick={onClick} />
       </Container>
     </React.Fragment>
@@ -47,15 +44,16 @@ function AdminLogin(props) {
 
 
 const mapStateToProps = state => {
-  console.log(state);
-  return { 
-    username : state.admin.username,
-    secret_key : state.admin.secret_key
-   };
+  return {
+    user_type: state.login.user_type,
+    username: state.login.username,
+    token: state.login.token
+  };
 };
 
 const mapDispatchToProps = {
-  addSecretKey
+  setAlert,
+  addToken
 }
 
 export default connect(
