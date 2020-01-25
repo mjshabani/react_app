@@ -12,9 +12,9 @@ const reducer = combineReducers({
 
 const initialState = {
   login: {
-    user_type: Cookie.get('user_type') ? Cookie.get('user_type') : '',
-    username: Cookie.get('username') ? Cookie.get('username') : '',
-    token: Cookie.get('token') ? Cookie.get('token') : '',
+    user_type: Cookie.get('user_type') ? Cookie.get('user_type') : 'admin',
+    username: Cookie.get('username') ? Cookie.get('username') : 'admin',
+    token: Cookie.get('token') ? Cookie.get('token') : 'token',
   },
   alert: {
     open: false,
@@ -23,9 +23,6 @@ const initialState = {
     content: 'content'
   }
 };
-
-console.log('initial State : ')
-console.log(initialState)
 
 const store = createStore(reducer, initialState,
   window.__REDUX_DEVTOOLS_EXTENSION__ &&

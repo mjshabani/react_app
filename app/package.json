@@ -12,6 +12,8 @@
     "axios": "latest",
     "clsx": "^1.0.4",
     "js-cookie": "^2.2.1",
+    "jss": "^10.0.3",
+    "jss-rtl": "^0.3.0",
     "local-ip-url": "latest",
     "react": "latest",
     "react-dom": "latest",

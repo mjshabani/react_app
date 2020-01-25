@@ -1,22 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import * as serviceWorker from './serviceWorker';
-import localIpUrl from 'local-ip-url';
-import { Provider } from 'react-redux'
-import store from './redux/store'
-import Routing from './routing'
-import axios from 'axios'
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import * as serviceWorker from "./serviceWorker";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import Routing from "./routing";
+import "./index.css";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
-const ipAddress = localIpUrl();
-axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-axios.defaults.baseURL = 'http://' + ipAddress + ':8080/api'
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: ["BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"].join(
+      ","
+    )
+  }
+});
 
 ReactDOM.render(
-  <Provider store={store}>
-    <Routing/>
-  </Provider>
-  , document.getElementById('root'));
+  <ThemeProvider theme={theme}>
+    <Provider store={store}>
+      <Routing />
+    </Provider>
+  </ThemeProvider>,
+  document.getElementById("root")
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

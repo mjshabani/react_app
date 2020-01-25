@@ -1,8 +1,6 @@
 import React from 'react';
 import './Login.css';
 import { Button, TextField, Grid } from '@material-ui/core'
-import {setAlert} from '../redux/actions/alert'
-
 
 class Login extends React.Component {
 
