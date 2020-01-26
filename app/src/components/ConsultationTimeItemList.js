@@ -40,17 +40,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function ConsultantItemList(props) {
+function ConsultationTimeItemList(props) {
   const history = useHistory();
   const classes = useStyles();
 
   function handleEdit() {}
 
   return (
-    <Grid
-      item
-      onClick={() => history.push(`/consultant/${props.data.username}id`)}
-    >
+    <Grid item>
       <Paper className={classes.paper}>
         <Grid
           container
@@ -64,7 +61,7 @@ function ConsultantItemList(props) {
           </Grid>
 
           {(() => {
-            if (props.state.login.user_type === "admin") {
+            if (props.user_type === "adminadmin") {
               return (
                 <Grid
                   container
@@ -118,7 +115,7 @@ function ConsultantItemList(props) {
                   >
                     <Grid item>
                       <Avatar
-                        src={props.data.image}
+                        alt={props.data.name}
                         className={classes.largeAvatar}
                       />
                     </Grid>
@@ -217,11 +214,12 @@ function ConsultantItemList(props) {
 }
 
 const mapStateToProps = state => {
-  return {
-    state: state
-  };
+  return state;
 };
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConsultantItemList);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ConsultationTimeItemList);
