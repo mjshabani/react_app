@@ -1,21 +1,17 @@
 import React from "react";
 import { TextField, Grid } from "@material-ui/core";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import axios from "axios";
 
 import { setLoginDialog, setAlert, setLogin } from "../redux/actions";
 
 function Login(props) {
-  const history = useHistory();
-  const [open, setOpen] = React.useState(false);
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
 
@@ -106,6 +102,11 @@ function Login(props) {
     >
       <DialogTitle id="form-dialog-title" dir="rtl">
         ورود
+        {
+          { user: " کاربر", consultant: " مشاور", admin: " مدیر" }[
+            props.state.dialog.login.user_type
+          ]
+        }
       </DialogTitle>
       <DialogContent>
         <Grid

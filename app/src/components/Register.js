@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { setAlert, setLogin, setRegisterDialog } from "../redux/actions";
 
-import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
 import {
   Button,
   TextField,
@@ -18,11 +16,7 @@ import {
 
 import {} from "@material-ui/icons";
 
-const useStyles = makeStyles(theme => ({}));
-
 function Register(props) {
-  const classes = useStyles();
-  const history = useHistory();
   const [username, setUsername] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [longCode, setLongCode] = React.useState("");

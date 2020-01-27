@@ -7,10 +7,6 @@ import Navigation from "./Navigation";
 import Footer from "./Footer";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
-import { Typography } from "@material-ui/core";
-
-import { Grid } from "@material-ui/core";
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({

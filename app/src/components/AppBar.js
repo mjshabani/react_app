@@ -9,19 +9,14 @@ import {
   setRegisterDialog
 } from "../redux/actions";
 
-import Logout from "./Logout";
-
 import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
 import {
   AppBar as AB,
   Toolbar,
   IconButton,
   Typography,
   MenuItem,
-  Menu,
-  Tab,
-  Tabs
+  Menu
 } from "@material-ui/core";
 
 import { Menu as MenuIcon, AccountCircle } from "@material-ui/icons";
@@ -87,7 +82,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function AppBar(props) {
-  const history = useHistory();
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = React.useState(null);

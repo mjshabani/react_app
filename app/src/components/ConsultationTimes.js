@@ -1,7 +1,8 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
   Button,
+  Fab,
   Paper,
   Table,
   TableBody,
@@ -12,47 +13,25 @@ import {
   TableRow,
   Container
 } from "@material-ui/core";
-import { connect } from "react-redux";
-import ConsultationTimeItemList from "./ConsultationTimeItemList";
-import axios from "axios";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import AddIcon from "@material-ui/icons/Add";
 
-const columns = [
-  {
-    id: "index",
-    label: "#",
-    minWidth: 20,
-    align: "center",
-    format: value => value.toLocaleString()
+import { setAlert, setLoginDialog } from "../redux/actions";
+import { connect } from "react-redux";
+import axios from "axios";
+import { toDateString, toWeekdayString, toHourString } from "../utils.js";
+
+const StyledTableCell = withStyles(theme => ({
+  head: {
+    fontSize: 18,
+    backgroundColor: theme.palette.primary.dark,
+    color: theme.palette.common.white
   },
-  {
-    id: "consultant",
-    label: "مشاور",
-    minWidth: 80,
-    align: "center",
-    format: value => value.toLocaleString()
-  },
-  {
-    id: "begin_time",
-    label: "تاریخ",
-    minWidth: 80,
-    align: "center",
-    format: value => value.toLocaleString()
-  },
-  {
-    id: "duration",
-    label: "مدت‌زمان",
-    minWidth: 50,
-    align: "center",
-    format: value => value.toFixed(2)
-  },
-  {
-    id: "status",
-    label: "وضعیت",
-    minWidth: 80,
-    align: "center",
-    format: value => value.toFixed(2)
+  body: {
+    fontSize: 14
   }
-];
+}))(TableCell);
 
 const useStyles = makeStyles({
   root: {
@@ -60,6 +39,13 @@ const useStyles = makeStyles({
   },
   container: {
     maxHeight: 440
+  },
+  fab: {
+    margin: 5
+  },
+  addFab: {
+    margin: 10,
+    marginLeft: 20
   }
 });
 
@@ -80,8 +66,157 @@ function ConsultationTimes(props) {
     setPerPage(+event.target.value);
   };
 
-  function update() {
-    if (!isFetched) {
+  const handleDelete = id => () => {
+    if (["admin", "consultant"].includes(props.state.login.user_type)) {
+      axios
+        .delete(`/consultation_time/${id}`)
+        .then(function(response) {
+          update(true);
+          props.setAlert({
+            open: true,
+            type: "info",
+            title: "Success",
+            content: ""
+          });
+        })
+        .catch(function(error) {
+          if (error.response) {
+            props.setAlert({
+              open: true,
+              type: "error",
+              title: "BadRequest",
+              content: error.response.data
+            });
+          }
+        });
+    } else {
+      props.setLoginDialog({
+        open: true,
+        user_type: "user"
+      });
+    }
+  };
+
+  const handleReserve = id => () => {
+    if (props.state.login.user_type === "user") {
+      axios
+        .post("/reservation", {
+          consultation_time: id
+        })
+        .then(function(response) {
+          update(true);
+          props.setAlert({
+            open: true,
+            type: "info",
+            title: "Success",
+            content: ""
+          });
+        })
+        .catch(function(error) {
+          if (error.response) {
+            props.setAlert({
+              open: true,
+              type: "error",
+              title: "BadRequest",
+              content: error.response.data
+            });
+          }
+        });
+    } else {
+      props.setLoginDialog({
+        open: true,
+        user_type: "user"
+      });
+    }
+  };
+
+  const actions = item => {
+    if (["admin", "consultant"].includes(props.state.login.user_type)) {
+      return [
+        <Fab size="small" color="primary" className={classes.fab}>
+          <EditIcon />
+        </Fab>,
+        <Fab
+          size="small"
+          color="secondary"
+          disabled={item.status === 1}
+          className={classes.fab}
+          onClick={handleDelete(item.id)}
+        >
+          <DeleteIcon />
+        </Fab>
+      ];
+    }
+  };
+
+  const columns = [
+    {
+      label: "#",
+      minWidth: 10
+    },
+    props.hideConsultants
+      ? {
+          label: "",
+          minWidth: 0,
+          fill: () => {}
+        }
+      : {
+          label: "مشاور",
+          minWidth: 80,
+          fill: item =>
+            `${item.consultant.title} ${item.consultant.name} ${item.consultant.family}`
+        },
+    {
+      label: "روز",
+      minWidth: 20,
+      fill: item => toWeekdayString(item.begin_time)
+    },
+    {
+      label: "تاریخ",
+      minWidth: 50,
+      fill: item => toDateString(item.begin_time)
+    },
+    {
+      label: "ساعت",
+      minWidth: 20,
+      fill: item => toHourString(item.begin_time)
+    },
+    {
+      label: "مدت‌زمان",
+      minWidth: 20,
+      fill: item => item.duration.toLocaleString("fa-IR")
+    },
+    {
+      label: "وضعیت",
+      minWidth: 30,
+      fill: item =>
+        item.status === 0 ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleReserve(item.id)}
+          >
+            رزرو
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleReserve(item.id)}
+          >
+            رزرو شده
+          </Button>
+        )
+    },
+    {
+      label: "",
+      minWidth: 0,
+      fill: actions
+    }
+  ];
+
+  function update(force = false) {
+    if (!isFetched || force) {
       axios
         .get("/consultation_time")
         .then(function(response) {
@@ -112,49 +247,38 @@ function ConsultationTimes(props) {
 
   return (
     <Container maxWidth="md">
+      {props.state.login.user_type === "admin" && (
+        <Fab className={classes.addFab} color="primary">
+          <AddIcon />
+        </Fab>
+      )}
       <Paper className={classes.root}>
         <TableContainer className={classes.container}>
           <Table stickyHeader aria-label="sticky table" dir="rtl">
             <TableHead>
               <TableRow>
                 {columns.map(column => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
+                  <StyledTableCell
+                    align="center"
                     style={{ minWidth: column.minWidth }}
                   >
                     {column.label}
-                  </TableCell>
+                  </StyledTableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {items.map((item, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={item.code}>
-                    <TableCell key="index" align="center">
+                  <TableRow hover role="checkbox" tabIndex={-1}>
+                    <StyledTableCell align="center">
                       {index + 1}
-                    </TableCell>
-                    <TableCell key="consultant" align="center">
-                      {`${item.consultant.title} ${item.consultant.name} ${item.consultant.family}`}
-                    </TableCell>
-                    <TableCell key="begin_time" align="center">
-                      {item.begin_time}
-                    </TableCell>
-                    <TableCell key="duration" align="center">
-                      {`${item.duration}'`}
-                    </TableCell>
-                    <TableCell key="status" align="center">
-                      {item.status === 0 ? (
-                        <Button variant="contained" color="primary">
-                          رزرو
-                        </Button>
-                      ) : (
-                        <Button variant="contained" disabled color="secondary">
-                          رزرو شده
-                        </Button>
-                      )}
-                    </TableCell>
+                    </StyledTableCell>
+                    {columns.slice(1, columns.length).map(columns => (
+                      <StyledTableCell align="center">
+                        {columns.fill(item)}
+                      </StyledTableCell>
+                    ))}
                   </TableRow>
                 );
               })}
@@ -162,9 +286,9 @@ function ConsultationTimes(props) {
           </Table>
         </TableContainer>
         <TablePagination
-          perPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[]}
           component="div"
-          count={items.length}
+          count={total}
           rowsPerPage={perPage}
           page={page}
           onChangePage={handleChangePage}
@@ -181,6 +305,9 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setAlert,
+  setLoginDialog
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConsultationTimes);

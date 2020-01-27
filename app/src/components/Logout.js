@@ -4,21 +4,15 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { setAlert, setLogin, setLogoutDialog } from "../redux/actions";
 
-import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 import {} from "@material-ui/icons";
 
-const useStyles = makeStyles(theme => ({}));
-
 function Logout(props) {
-  const classes = useStyles();
   const history = useHistory();
 
   function handleLogout() {
@@ -36,14 +30,14 @@ function Logout(props) {
         );
       })
       .catch(function(error) {
-        if (error.response) {
-          props.setAlert({
-            open: true,
-            type: "error",
-            title: "BadRequest",
-            content: error.response.data
-          });
-        }
+        props.setLogin_setLogoutDialog(
+          {
+            user_type: "",
+            username: "",
+            token: ""
+          },
+          { open: false }
+        );
       });
   }
 

@@ -75,9 +75,9 @@ function Footer(props) {
           </Grid>
         ))}
       </Grid> */}
-      {/* <Box mt={10} mb={0}>
+      <Box mt={10} mb={0}>
         <Copyright />
-      </Box> */}
+      </Box>
     </Container>
   );
 }
