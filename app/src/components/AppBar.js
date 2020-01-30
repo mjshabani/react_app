@@ -1,12 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 import clsx from "clsx";
 
 import {
   setDrawer,
   setLoginDialog,
   setLogoutDialog,
-  setRegisterDialog
+  setRegisterDialog,
+  setChangePasswordDialog
 } from "../redux/actions";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -83,6 +85,7 @@ const useStyles = makeStyles(theme => ({
 
 function AppBar(props) {
   const classes = useStyles();
+  const history = useHistory();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -140,7 +143,7 @@ function AppBar(props) {
                   });
                 }}
               >
-                ورود مشاوران
+                ورود مشاور
               </MenuItem>,
               <MenuItem
                 onClick={() => {
@@ -155,9 +158,34 @@ function AppBar(props) {
               </MenuItem>
             ];
             break;
-          default:
+          case "user":
+          case "consultant":
             return [
-              <MenuItem onClick={handleMenuClose}>پروفایل</MenuItem>,
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null);
+                  let x =
+                    props.state.login.user_type === "user"
+                      ? props.state.login.user.id
+                      : props.state.login.user.username;
+                  history.push(`/${props.state.login.user_type}/${x}`);
+                }}
+              >
+                پروفایل
+              </MenuItem>,
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null);
+                  props.setChangePasswordDialog({
+                    open: true,
+                    afterClose: () => {},
+                    user_type: props.state.login.user_type,
+                    user: props.state.login.user
+                  });
+                }}
+              >
+                تغییر گذرواژه
+              </MenuItem>,
               <MenuItem
                 onClick={() => {
                   setAnchorEl(null);
@@ -169,6 +197,20 @@ function AppBar(props) {
                 خروج
               </MenuItem>
             ];
+            break;
+          default:
+            return (
+              <MenuItem
+                onClick={() => {
+                  setAnchorEl(null);
+                  props.setLogoutDialog({
+                    open: true
+                  });
+                }}
+              >
+                خروج
+              </MenuItem>
+            );
             break;
         }
       })()}
@@ -183,7 +225,7 @@ function AppBar(props) {
         [classes.appBarShift]: props.state.navigation.drawer_open
       })}
     >
-      <Toolbar variant="dense">
+      <Toolbar>
         <div className={classes.sectionDesktop}>
           <IconButton
             edge="start"
@@ -198,7 +240,7 @@ function AppBar(props) {
         </div>
         <div className={classes.grow} />
         <Typography className={classes.title} variant="h6" noWrap>
-          سامانه‌ نوبت‌دهی آنلاین
+          سامانه برخط نوبت‌دهی مشاوره
         </Typography>
         <IconButton
           edge="end"
@@ -221,7 +263,8 @@ const mapDispatchToProps = {
   setDrawer,
   setLoginDialog,
   setLogoutDialog,
-  setRegisterDialog
+  setRegisterDialog,
+  setChangePasswordDialog
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppBar);

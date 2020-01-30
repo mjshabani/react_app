@@ -19,11 +19,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
 
-import {
-  setAlert,
-  setLoginDialog,
-  setAddConsultationTimeDialog
-} from "../redux/actions";
+import { setAlert, setLoginDialog } from "../redux/actions";
 import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
@@ -56,7 +52,7 @@ const useStyles = makeStyles({
   }
 });
 
-function ConsultationTimes(props) {
+function Reservations(props) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -78,7 +74,7 @@ function ConsultationTimes(props) {
   const handleDelete = id => () => {
     if (["admin", "consultant"].includes(props.state.login.user_type)) {
       axios
-        .delete(`/consultation_time/${id}`)
+        .delete(`/reservation/${id}`)
         .then(function(response) {
           update(true);
           props.setAlert({
@@ -117,7 +113,7 @@ function ConsultationTimes(props) {
     if (props.state.login.user_type === "user") {
       axios
         .post("/reservation", {
-          consultation_time: id
+          reservation: id
         })
         .then(function(response) {
           update(true);
@@ -154,12 +150,11 @@ function ConsultationTimes(props) {
   };
 
   const actions = item => {
-    if (
-      (props.state.login.user_type === "consultant" &&
-        item.consultant.id === props.state.login.user.id) ||
-      props.state.login.user_type === "admin"
-    ) {
+    if (["admin", "consultant"].includes(props.state.login.user_type)) {
       return [
+        <Fab size="small" color="primary" className={classes.fab}>
+          <EditIcon />
+        </Fab>,
         <Fab
           size="small"
           color="secondary"
@@ -178,68 +173,29 @@ function ConsultationTimes(props) {
       label: "#",
       minWidth: 10
     },
-    props.hideConsultants
-      ? {
-          label: "",
-          minWidth: 0,
-          fill: () => {}
-        }
-      : {
-          label: "مشاور",
-          minWidth: 80,
-          fill: item => (
-            <div
-              onClick={() =>
-                history.push(`/consultant/${item.consultant.username}`)
-              }
-            >
-              {`${item.consultant.title} ${item.consultant.name} ${item.consultant.family}`}
-            </div>
-          )
-        },
     {
-      label: "روز",
-      fill: item => toWeekdayString(item.begin_time)
+      label: "مراجعه کننده",
+      fill: item => `${item.user.name} ${item.user.family}`,
+      hidden: props.hideUsers
     },
     {
-      label: "تاریخ",
-      fill: item => toDateString(item.begin_time)
+      label: "مشاور",
+      fill: item => {
+        let consultant = item.consultation_time.consultant;
+        return `${consultant.title} ${consultant.name} ${consultant.family}`;
+      },
+      hidden: props.hideConsultants
     },
     {
-      label: "ساعت",
-      fill: item => toHourString(item.begin_time)
+      label: "روز-ساعت",
+      fill: item =>
+        toHourString(item.consultation_time.begin_time) +
+        " - " +
+        toDateString(item.consultation_time.begin_time)
     },
     {
       label: "مدت‌زمان",
-      fill: item => item.duration.toLocaleString("fa-IR")
-    },
-    {
-      label: "وضعیت",
-      fill: item =>
-        item.status === 0 ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleReserve(item.id)}
-          >
-            رزرو
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              props.setAlert({
-                open: true,
-                type: "error",
-                title: "این زمان توسط شخص دیگری رزرو شده است.",
-                content: ""
-              });
-            }}
-          >
-            رزرو شده
-          </Button>
-        )
+      fill: item => item.consultation_time.duration.toLocaleString("fa-IR")
     },
     {
       label: "",
@@ -256,12 +212,11 @@ function ConsultationTimes(props) {
       JSON.stringify(newParams) !== JSON.stringify(params)
     ) {
       axios
-        .get("/consultation_time", {
+        .get("/reservation", {
           params: newParams
         })
         .then(function(response) {
           const list = response.data.list;
-          console.log(list);
           const meta = response.data.meta;
           setItems(list);
           setTotal(meta.total);
@@ -297,46 +252,27 @@ function ConsultationTimes(props) {
       <Paper elevation={3} className={classes.root}>
         <Toolbar dir="rtl">
           <Typography className={classes.title} variant="h6" id="tableTitle">
-            زمان‌های مشاوره
+            رزرو‌ها
           </Typography>
-          {props.filter !== undefined &&
-            ((props.state.login.user_type === "consultant" &&
-              props.filter.consultant === props.state.login.user.id) ||
-              props.state.login.user_type === "admin") && (
-              <Fab
-                className={classes.addFab}
-                color="primary"
-                size="small"
-                onClick={() => {
-                  props.setAddConsultationTimeDialog({
-                    open: true,
-                    afterClose: () => {
-                      update(true);
-                    },
-                    consultant:
-                      props.filter !== undefined ? props.filter.consultant : ""
-                  });
-                }}
-              >
-                <AddIcon />
-              </Fab>
-            )}
         </Toolbar>
         <TableContainer className={classes.container}>
           <Table size="small" stickyHeader aria-label="sticky table" dir="rtl">
             <TableHead>
               <TableRow>
-                {columns.map(column => (
-                  <StyledTableCell
-                    align="center"
-                    style={{
-                      minWidth: column.minWidth,
-                      maxWidth: column.maxWidth
-                    }}
-                  >
-                    {column.label}
-                  </StyledTableCell>
-                ))}
+                {columns.map(
+                  column =>
+                    !column.hidden && (
+                      <StyledTableCell
+                        align="center"
+                        style={{
+                          minWidth: column.minWidth,
+                          maxWidth: column.maxWidth
+                        }}
+                      >
+                        {column.label}
+                      </StyledTableCell>
+                    )
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -346,17 +282,20 @@ function ConsultationTimes(props) {
                     <StyledTableCell align="center">
                       {index + 1}
                     </StyledTableCell>
-                    {columns.slice(1, columns.length).map(column => (
-                      <StyledTableCell
-                        align="center"
-                        style={{
-                          minWidth: column.minWidth,
-                          maxWidth: column.maxWidth
-                        }}
-                      >
-                        {column.fill(item)}
-                      </StyledTableCell>
-                    ))}
+                    {columns.slice(1, columns.length).map(
+                      column =>
+                        !column.hidden && (
+                          <StyledTableCell
+                            align="center"
+                            style={{
+                              minWidth: column.minWidth,
+                              maxWidth: column.maxWidth
+                            }}
+                          >
+                            {column.fill(item)}
+                          </StyledTableCell>
+                        )
+                    )}
                   </TableRow>
                 );
               })}
@@ -385,8 +324,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   setAlert,
-  setLoginDialog,
-  setAddConsultationTimeDialog
+  setLoginDialog
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConsultationTimes);
+export default connect(mapStateToProps, mapDispatchToProps)(Reservations);

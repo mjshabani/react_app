@@ -4,28 +4,26 @@ import { Snackbar } from "@material-ui/core";
 import { setAlert } from "../redux/actions";
 import { connect } from "react-redux";
 
-class Alert extends React.Component {
-  render() {
-    return (
-      <Snackbar
-        open={this.props.open}
-        autoHideDuration={3000}
-        onClose={() =>
-          this.props.setAlert({
-            open: false,
-            type: this.props.type,
-            title: this.props.title,
-            content: this.props.content
-          })
-        }
-      >
-        <A severity={this.props.type}>
-          <AlertTitle>{this.props.title}</AlertTitle>
-          {this.props.content}
-        </A>
-      </Snackbar>
-    );
-  }
+function Alert(props) {
+  return (
+    <Snackbar
+      open={props.open}
+      autoHideDuration={3000}
+      onClose={() =>
+        props.setAlert({
+          open: false,
+          type: props.type,
+          title: props.title,
+          content: props.content
+        })
+      }
+    >
+      <A variant="filled" severity={props.type}>
+        <AlertTitle>{props.title}</AlertTitle>
+        {props.content}
+      </A>
+    </Snackbar>
+  );
 }
 const mapStateToProps = state => {
   return state.alert;

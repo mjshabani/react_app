@@ -23,7 +23,7 @@ function Logout(props) {
         props.setLogin_setLogoutDialog(
           {
             user_type: "",
-            username: "",
+            user: {},
             token: ""
           },
           { open: false }
@@ -33,11 +33,17 @@ function Logout(props) {
         props.setLogin_setLogoutDialog(
           {
             user_type: "",
-            username: "",
+            user: {},
             token: ""
           },
           { open: false }
         );
+        props.setAlert({
+          open: true,
+          type: "error",
+          title: "ارتباط با سرور برقرار نیست.",
+          content: ""
+        });
       });
   }
 

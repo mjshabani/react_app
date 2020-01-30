@@ -15,7 +15,7 @@ const reducer = combineReducers({
 const initialState = {
   login: {
     user_type: Cookie.get("user_type") ? Cookie.get("user_type") : "",
-    username: Cookie.get("username") ? Cookie.get("username") : "",
+    user: Cookie.get("user") ? JSON.parse(Cookie.get("user")) : {},
     token: Cookie.get("token") ? Cookie.get("token") : ""
   },
   alert: {
@@ -25,12 +25,13 @@ const initialState = {
     content: "content"
   },
   navigation: {
-    drawer_open: false
+    drawer_open: true
   },
   dialog: {
     login: {
       open: false,
-      user_type: ""
+      user_type: "",
+      user: {}
     },
     logout: {
       open: false
@@ -38,6 +39,31 @@ const initialState = {
     register: {
       open: false,
       step: 1
+    },
+    addConsultant: {
+      open: false,
+      afterClose: () => {}
+    },
+    changePassword: {
+      open: false,
+      afterClose: () => {},
+      user_type: "",
+      user: {}
+    },
+    updateConsultant: {
+      open: false,
+      afterUpdate: () => {},
+      consultant: {}
+    },
+    addConsultationTime: {
+      open: false,
+      afterClose: () => {},
+      consultant: ""
+    },
+    updateUser: {
+      open: false,
+      afterUpdate: () => {},
+      user: {}
     }
   }
 };

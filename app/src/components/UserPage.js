@@ -8,27 +8,27 @@ import { useHistory, useParams } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import {} from "@material-ui/icons";
 
-import ConsultantInfo from "./ConsultantInfo";
-import ConsultationTimes from "./ConsultationTimes";
+import UserInfo from "./UserInfo";
+import Reservations from "./Reservations";
 
 const useStyles = makeStyles(theme => ({}));
 
-function ConsultantPage(props) {
+function UserPage(props) {
   const classes = useStyles();
   const history = useHistory();
 
   const [isFetched, setIsFetched] = React.useState(false);
   const [isFetchedCompletely, setIsFetchedCompletely] = React.useState(false);
-  const [consultant, setConsultant] = React.useState({});
+  const [user, setUser] = React.useState({});
 
-  let { consultant_username } = useParams();
+  let { user_id } = useParams();
 
   const update = (force = false) => {
     if (!isFetched || force) {
       axios
-        .get(`/consultant/${consultant_username}`)
+        .get(`/user/${user_id}`)
         .then(response => {
-          setConsultant(response.data);
+          setUser(response.data);
           setIsFetchedCompletely(true);
         })
         .catch(error => {
@@ -58,11 +58,8 @@ function ConsultantPage(props) {
   return (
     <Container maxWidth="md">
       {isFetchedCompletely && [
-        <ConsultantInfo consultant={consultant} />,
-        <ConsultationTimes
-          hideConsultants
-          filter={{ consultant: consultant.id }}
-        />
+        <UserInfo user={user} />,
+        <Reservations hideUsers filter={{ user: user.id }} />
       ]}
     </Container>
   );
@@ -73,4 +70,4 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = { setAlert };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConsultantPage);
+export default connect(mapStateToProps, mapDispatchToProps)(UserPage);

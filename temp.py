@@ -3,7 +3,7 @@ class LoginAdmin(Document):
     password = StringField(required=True)
 
 
-class CreateConsultant(Document):
+class AddConsultant(Document):
     username = StringField(required=True, max_length=20, min_length=5)
     password = StringField(required=True, max_length=20, min_length=8)
 

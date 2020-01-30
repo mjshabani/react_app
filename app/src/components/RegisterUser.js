@@ -53,6 +53,13 @@ function Register(props) {
             title: "BadRequest",
             content: error.response.data
           });
+        } else {
+          props.setAlert({
+            open: true,
+            type: "error",
+            title: "ارتباط با سرور برقرار نیست.",
+            content: ""
+          });
         }
       });
   }
@@ -64,16 +71,19 @@ function Register(props) {
         long_code: longCode
       })
       .then(function(response) {
-        console.log(response.data);
-
+        setTimeout(() => {
+          props.setAlert({
+            open: true,
+            type: "info",
+            title: "اطلاعات کاربری و گذرواژه خود را بروز کنید.",
+            content: ""
+          });
+        }, 100);
         props.setLogin_setRegisterDialog(
           {
             user_type: "user",
-            username: username,
-            token: response.data.access_token,
-            phoneNumber: response.data.phone_number,
-            name: response.data.name,
-            family: response.data.family
+            user: response.data,
+            token: response.data.access_token
           },
           {
             open: false,
@@ -88,6 +98,13 @@ function Register(props) {
             type: "error",
             title: "BadRequest",
             content: error.response.data
+          });
+        } else {
+          props.setAlert({
+            open: true,
+            type: "error",
+            title: "ارتباط با سرور برقرار نیست.",
+            content: ""
           });
         }
       });

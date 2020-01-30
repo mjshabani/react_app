@@ -8,7 +8,14 @@ import Panel from "../components/Panel";
 import Alert from "../components/Alert";
 import Login from "../components/Login";
 import Logout from "../components/Logout";
-import Register from "../components/Register";
+import Register from "../components/RegisterUser";
+import AddConsultant from "../components/AddConsultant";
+import ChangePassword from "../components/ChangePassword";
+import UpdateConsultant from "../components/UpdateConsultant";
+import UpdateUser from "../components/UpdateUser";
+
+import AddConsultationTime from "../components/AddConsultationTime";
+import ScrollToTop from "./ScrollToTop";
 
 import localIpUrl from "local-ip-url";
 import axios from "axios";
@@ -23,7 +30,7 @@ function App(props) {
       axios.defaults.headers.common["SECRET-KEY"] = props.state.login.token;
       break;
     case "user":
-    case "consultants":
+    case "consultant":
       axios.defaults.headers.common["ACCESS-TOKEN"] = props.state.login.token;
       break;
     default:
@@ -34,11 +41,17 @@ function App(props) {
 
   return [
     <Router>
+      <ScrollToTop />
       <Panel />
       <Alert />
       <Login />
       <Logout />
       <Register />
+      <AddConsultant />
+      <ChangePassword />
+      <UpdateConsultant />
+      <UpdateUser />
+      <AddConsultationTime />
     </Router>
   ];
 }

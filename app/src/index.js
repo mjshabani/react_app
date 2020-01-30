@@ -9,9 +9,7 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 const theme = createMuiTheme({
   typography: {
-    fontFamily: ["BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"].join(
-      ","
-    )
+    fontFamily: '"Vazir", sans-serif'
   }
 });
 

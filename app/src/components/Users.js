@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
   Button,
@@ -18,13 +19,15 @@ import {
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VpnKeyIcon from "@material-ui/icons/VpnKey";
 
 import {
   setAlert,
   setLoginDialog,
-  setAddConsultationTimeDialog
+  setChangePasswordDialog,
+  setUpdateUserDialog
 } from "../redux/actions";
-import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import axios from "axios";
 import { toDateString, toWeekdayString, toHourString } from "../utils.js";
@@ -45,7 +48,7 @@ const useStyles = makeStyles({
     width: "100%"
   },
   container: {
-    maxHeight: 800
+    maxHeight: 1000
   },
   fab: {
     margin: 5
@@ -56,7 +59,7 @@ const useStyles = makeStyles({
   }
 });
 
-function ConsultationTimes(props) {
+function Users(props) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -65,7 +68,6 @@ function ConsultationTimes(props) {
   const [perPage, setPerPage] = React.useState(10);
   const [items, setItems] = React.useState([]);
   const [total, setTotal] = React.useState(0);
-  const [params, setParams] = React.useState(-1);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -76,9 +78,9 @@ function ConsultationTimes(props) {
   };
 
   const handleDelete = id => () => {
-    if (["admin", "consultant"].includes(props.state.login.user_type)) {
+    if (props.state.login.user_type === "admin") {
       axios
-        .delete(`/consultation_time/${id}`)
+        .delete(`/user/${id}`)
         .then(function(response) {
           update(true);
           props.setAlert({
@@ -113,57 +115,51 @@ function ConsultationTimes(props) {
     }
   };
 
-  const handleReserve = id => () => {
-    if (props.state.login.user_type === "user") {
-      axios
-        .post("/reservation", {
-          consultation_time: id
-        })
-        .then(function(response) {
-          update(true);
-          props.setAlert({
-            open: true,
-            type: "info",
-            title: "Success",
-            content: ""
-          });
-        })
-        .catch(function(error) {
-          if (error.response) {
-            props.setAlert({
-              open: true,
-              type: "error",
-              title: "BadRequest",
-              content: error.response.data
-            });
-          } else {
-            props.setAlert({
-              open: true,
-              type: "error",
-              title: "ارتباط با سرور برقرار نیست.",
-              content: ""
-            });
-          }
-        });
-    } else {
-      props.setLoginDialog({
-        open: true,
-        user_type: "user"
-      });
-    }
-  };
-
   const actions = item => {
-    if (
-      (props.state.login.user_type === "consultant" &&
-        item.consultant.id === props.state.login.user.id) ||
-      props.state.login.user_type === "admin"
-    ) {
+    if (props.state.login.user_type === "admin") {
       return [
         <Fab
           size="small"
+          color="primary"
+          className={classes.fab}
+          onClick={() => history.push(`/user/${item.id}`)}
+        >
+          <VisibilityIcon />
+        </Fab>,
+        <Fab
+          size="small"
+          color="primary"
+          className={classes.fab}
+          onClick={() =>
+            props.setUpdateUserDialog({
+              open: true,
+              afterUpdate: () => {
+                window.location.reload();
+              },
+              user: item
+            })
+          }
+        >
+          <EditIcon />
+        </Fab>,
+        <Fab
+          size="small"
+          color="primary"
+          className={classes.fab}
+          onClick={() => {
+            props.setChangePasswordDialog({
+              open: true,
+              afterClose: () => {},
+              user_type: "user",
+              user: item
+            });
+          }}
+        >
+          <VpnKeyIcon />
+        </Fab>,
+        <Fab
+          size="small"
           color="secondary"
-          disabled={item.status === 1}
           className={classes.fab}
           onClick={handleDelete(item.id)}
         >
@@ -178,68 +174,22 @@ function ConsultationTimes(props) {
       label: "#",
       minWidth: 10
     },
-    props.hideConsultants
-      ? {
-          label: "",
-          minWidth: 0,
-          fill: () => {}
-        }
-      : {
-          label: "مشاور",
-          minWidth: 80,
-          fill: item => (
-            <div
-              onClick={() =>
-                history.push(`/consultant/${item.consultant.username}`)
-              }
-            >
-              {`${item.consultant.title} ${item.consultant.name} ${item.consultant.family}`}
-            </div>
-          )
-        },
     {
-      label: "روز",
-      fill: item => toWeekdayString(item.begin_time)
+      label: "نام کاربری",
+      fill: item => item.username
     },
     {
-      label: "تاریخ",
-      fill: item => toDateString(item.begin_time)
+      label: "نام",
+      fill: item => item.name
     },
     {
-      label: "ساعت",
-      fill: item => toHourString(item.begin_time)
+      label: "نام خانوادگی",
+      fill: item => item.family
     },
     {
-      label: "مدت‌زمان",
-      fill: item => item.duration.toLocaleString("fa-IR")
-    },
-    {
-      label: "وضعیت",
-      fill: item =>
-        item.status === 0 ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleReserve(item.id)}
-          >
-            رزرو
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              props.setAlert({
-                open: true,
-                type: "error",
-                title: "این زمان توسط شخص دیگری رزرو شده است.",
-                content: ""
-              });
-            }}
-          >
-            رزرو شده
-          </Button>
-        )
+      label: "شماره همراه",
+      fill: item => item.phone_number,
+      maxWidth: 80
     },
     {
       label: "",
@@ -249,19 +199,11 @@ function ConsultationTimes(props) {
   ];
 
   function update(force = false) {
-    let newParams = props.filter !== undefined ? props.filter : {};
-    if (
-      !isFetched ||
-      force ||
-      JSON.stringify(newParams) !== JSON.stringify(params)
-    ) {
+    if (!isFetched || force) {
       axios
-        .get("/consultation_time", {
-          params: newParams
-        })
+        .get("/user")
         .then(function(response) {
           const list = response.data.list;
-          console.log(list);
           const meta = response.data.meta;
           setItems(list);
           setTotal(meta.total);
@@ -286,7 +228,6 @@ function ConsultationTimes(props) {
           }
         });
       setIsFetched(true);
-      setParams(newParams);
     }
   }
 
@@ -297,31 +238,10 @@ function ConsultationTimes(props) {
       <Paper elevation={3} className={classes.root}>
         <Toolbar dir="rtl">
           <Typography className={classes.title} variant="h6" id="tableTitle">
-            زمان‌های مشاوره
+            کاربران
           </Typography>
-          {props.filter !== undefined &&
-            ((props.state.login.user_type === "consultant" &&
-              props.filter.consultant === props.state.login.user.id) ||
-              props.state.login.user_type === "admin") && (
-              <Fab
-                className={classes.addFab}
-                color="primary"
-                size="small"
-                onClick={() => {
-                  props.setAddConsultationTimeDialog({
-                    open: true,
-                    afterClose: () => {
-                      update(true);
-                    },
-                    consultant:
-                      props.filter !== undefined ? props.filter.consultant : ""
-                  });
-                }}
-              >
-                <AddIcon />
-              </Fab>
-            )}
         </Toolbar>
+
         <TableContainer className={classes.container}>
           <Table size="small" stickyHeader aria-label="sticky table" dir="rtl">
             <TableHead>
@@ -386,7 +306,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   setAlert,
   setLoginDialog,
-  setAddConsultationTimeDialog
+  setChangePasswordDialog,
+  setUpdateUserDialog
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConsultationTimes);
+export default connect(mapStateToProps, mapDispatchToProps)(Users);

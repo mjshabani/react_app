@@ -41,7 +41,7 @@ function Login(props) {
             props.setLogin_setLoginDialog(
               {
                 user_type: "admin",
-                username: username,
+                user: response.data,
                 token: response.data.secret_key
               },
               { open: false, user_type: "" }
@@ -52,7 +52,7 @@ function Login(props) {
             props.setLogin_setLoginDialog(
               {
                 user_type: "user",
-                username: username,
+                user: response.data,
                 token: response.data.access_token
               },
               {
@@ -65,7 +65,7 @@ function Login(props) {
             props.setLogin_setLoginDialog(
               {
                 user_type: "consultant",
-                username: username,
+                user: response.data,
                 token: response.data.access_token
               },
               {
@@ -89,6 +89,13 @@ function Login(props) {
             type: "error",
             title: "Authentication Failed",
             content: error.response.data
+          });
+        } else {
+          props.setAlert({
+            open: true,
+            type: "error",
+            title: "ارتباط با سرور برقرار نیست.",
+            content: ""
           });
         }
       });

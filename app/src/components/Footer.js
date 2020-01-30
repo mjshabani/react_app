@@ -38,47 +38,16 @@ const footers = [
   }
 ];
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 function Footer(props) {
   const classes = useStyles();
   const history = useHistory();
 
   return (
-    <Container maxWidth="md" component="footer" className={classes.footer}>
-      {/* <Grid container spacing={4} justify="space-evenly" dir="rtl">
-        {footers.map(footer => (
-          <Grid item xs={6} sm={3} key={footer.title}>
-            <Typography variant="h6" color="textPrimary" gutterBottom>
-              {footer.title}
-            </Typography>
-            <ul>
-              {footer.description.map(item => (
-                <li key={item}>
-                  <Link href="#" variant="subtitle1" color="textSecondary">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Grid>
-        ))}
-      </Grid> */}
-      <Box mt={10} mb={0}>
-        <Copyright />
-      </Box>
-    </Container>
+    <Container
+      maxWidth="md"
+      component="footer"
+      className={classes.footer}
+    ></Container>
   );
 }
 const mapStateToProps = state => ({
