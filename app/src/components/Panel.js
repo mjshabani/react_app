@@ -87,11 +87,7 @@ function Panel(props) {
   return (
     <div className={classes.grow}>
       <Navigation />
-      <div
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: props.state.navigation.drawer_open
-        })}
-      >
+      <div>
         <Main />
         <Footer />
       </div>
